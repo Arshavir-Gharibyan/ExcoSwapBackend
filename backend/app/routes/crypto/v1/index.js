@@ -22,6 +22,7 @@ import getFantomBalance from "./getFantomBalance";
 import swapTokensList from "./wallet/swapTokensList";
 import importWallet from "./wallet/importWallet";
 import sellToken from "./wallet/sellToken";
+import OneInchswap from "./wallet/OneInchswap";
 
 const cryptoV1Route = Router();
 
@@ -565,11 +566,17 @@ cryptoV1Route.use('/SOLANABalance', getSolanaBalance)
 cryptoV1Route.use('/FANTOMBalance', getFantomBalance)
 /**
  * @swagger
- * /crypto/v1/swapTokensList:
+ * /crypto/v1/swapTokensList/{chainSymbol}:
  *   get:
  *     summary: Get all available tokens
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - name: chainSymbol
+ *         in: path
+ *         description: chainSymbol
+ *         required: true
+ *         type: string
  *     responses:
  *       200:
  *         description: Success
@@ -590,10 +597,22 @@ cryptoV1Route.use('/swapTokensList', swapTokensList)
  *           schema:
  *             type: object
  *             properties:
+ *               walletAddress:
+ *                 type: string
+ *                 description: The walletAddress.
+ *                 example: 0x
+ *               walletType:
+ *                 type: string
+ *                 description: The walletType.
+ *                 example: ETH
  *               sellTokenSymbol:
  *                 type: string
  *                 description: The sellTokenSymbol.
  *                 example: ETH
+ *               sellTokenAddress:
+ *                 type: string
+ *                 description: The sellTokenAddress.
+ *                 example: string
  *               sellTokenDecimals:
  *                 type: string
  *                 description: The sellTokenDecimals.
@@ -602,6 +621,10 @@ cryptoV1Route.use('/swapTokensList', swapTokensList)
  *                 type: string
  *                 description: The buyTokenSymbol.
  *                 example: DAI
+ *               buyTokenAddress:
+ *                 type: string
+ *                 description: The buyTokenAddress.
+ *                 example: string
  *               buyTokenDecimals:
  *                 type: string
  *                 description: The buyTokenDecimals.
@@ -677,4 +700,62 @@ cryptoV1Route.use('/possibleSwap', swapToken)
  *
  */
 cryptoV1Route.use('/swap', sellToken)
+/**
+ * @swagger
+ * /crypto/v1/OneInchswap:
+ *   post:
+ *     summary: OneInchswap
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               walletAddress:
+ *                 type: string
+ *                 description: The walletAddress.
+ *                 example: 0x
+ *               walletType:
+ *                 type: string
+ *                 description: The walletType.
+ *                 example: ETH
+ *               sellTokenSymbol:
+ *                 type: string
+ *                 description: The sellTokenSymbol.
+ *                 example: ETH
+ *               sellTokenAddress:
+ *                 type: string
+ *                 description: The sellTokenAddress.
+ *                 example: string
+ *               sellTokenDecimals:
+ *                 type: string
+ *                 description: The sellTokenDecimals.
+ *                 example: 18
+ *               buyTokenSymbol:
+ *                 type: string
+ *                 description: The buyTokenSymbol.
+ *                 example: DAI
+ *               buyTokenAddress:
+ *                 type: string
+ *                 description: The buyTokenAddress.
+ *                 example: string
+ *               buyTokenDecimals:
+ *                 type: string
+ *                 description: The buyTokenDecimals.
+ *                 example: 18
+ *               sellAmount:
+ *                 type: integer
+ *                 description: The amount.
+ *                 example: 0.1
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Success
+ *       401:
+ *         description: Access token is missing or invalid
+ *
+ */
+cryptoV1Route.use('/OneInchswap', OneInchswap)
 export default cryptoV1Route;
