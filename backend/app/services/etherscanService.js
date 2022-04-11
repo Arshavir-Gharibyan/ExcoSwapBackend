@@ -30,8 +30,16 @@ const getTokenBalanceFromContractAddress = async (contractaddresses, address) =>
 }
 const getTokenInfoFromContractAddress = async (balance)=>{
     let result = [];
+    const getData = async (curr) => {
+        const data = await axios.get(process.env.ETHERSCAN_API_URL + `?module=token&action=tokeninfo&contractaddress=${curr.coin_address}&apikey=${process.env.ETHERSCAN_API_KEY}`)
+        if (Array.isArray(data.data.result)) {
+            return data;
+        } else {
+            return await getData(curr);
+        }
+    }
     await Promise.all(balance.map(async (curr) => {
-        const info = await axios.get(process.env.ETHERSCAN_API_URL + `?module=token&action=tokeninfo&contractaddress=${curr.coin_address}&apikey=${process.env.ETHERSCAN_API_KEY}`)
+        const info = await getData(curr);
         if(info.data.result[0].symbol){
             const currentRes ={
                 'img':`https://etherscan.io/token/images/${info.data.result[0].symbol.toLowerCase()}_28.png`,
@@ -42,6 +50,7 @@ const getTokenInfoFromContractAddress = async (balance)=>{
             result.push({...currentRes})
         }
     }));
+
     return result
 }
 export {getAddressTransferEvents,getListContractAddresses,getTokenBalanceFromContractAddress,getTokenInfoFromContractAddress}

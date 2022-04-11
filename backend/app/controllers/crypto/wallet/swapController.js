@@ -181,42 +181,42 @@ const swapTokensOneInch = async (req,res)=>{
             const tokenAddress = fromTokenAddress
             const allowance = await oneInch.getAllowance({ chainId, tokenAddress, walletAddress })
             console.log('allowance:', allowance)
-            // if (BigNumber.from(allowance).lt(amount)) {
-            //     try{
-            //         const txData = await oneInch.getApproveTx({ chainId, tokenAddress, amount })
-            //         console.log('approval data:', txData)
-            //         const tx = await wallet.sendTransaction(txData)
-            //         console.log('approval tx:', tx.hash)
-            //         await tx.wait()
-            //     }catch(err){
-            //         errors.push(err)
-            //     }
-            //
-            // }
-            // try {
-            //     const fromAddress = walletAddress
-            //     const txData = await oneInch.getSwapTx({ chainId, fromTokenAddress, toTokenAddress, fromAddress, amount, slippage })
-            //     console.log('swap data:', txData)
-            //     const tx = await wallet.sendTransaction(txData)
-            //     console.log('swap tx:', tx.hash)
-            //     await tx.wait()
-            // }catch (err){
-            //     errors.push(err)
-            // }
+            if (BigNumber.from(allowance).lt(amount)) {
+                try{
+                    const txData = await oneInch.getApproveTx({ chainId, tokenAddress, amount })
+                    console.log('approval data:', txData)
+                    const tx = await wallet.sendTransaction(txData)
+                    console.log('approval tx:', tx.hash)
+                    await tx.wait()
+                }catch(err){
+                    errors.push(err)
+                }
 
-            const txData = {
-                data: '0x2e95b6c80000000000000000000000006b175474e89094c44da98b954eedeac495271d0f0000000000000000000000000000000000000000000000000de0b6b3a764000000000000000000000000000000000000000000000000000000000000000f0b580000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000100000000000000003b6d0340b20bd5d04be54f870d5c0d3ca85d82b34b836405cfee7c08',
-                to: '0x1111111254fb6c44bac0bed2854e76f90643097d',
-                value: '0',
-                gasLimit:gasLimit
             }
             try {
+                const fromAddress = walletAddress
+                const txData = await oneInch.getSwapTx({ chainId, fromTokenAddress, toTokenAddress, fromAddress, amount, slippage })
+                console.log('swap data:', txData)
                 const tx = await wallet.sendTransaction(txData)
                 console.log('swap tx:', tx.hash)
                 await tx.wait()
-            } catch (err) {
-                errors.push(err.reason)
+            }catch (err){
+                errors.push(err)
             }
+
+            // const txData = {
+            //     data: '0x2e95b6c80000000000000000000000006b175474e89094c44da98b954eedeac495271d0f0000000000000000000000000000000000000000000000000de0b6b3a764000000000000000000000000000000000000000000000000000000000000000f0b580000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000100000000000000003b6d0340b20bd5d04be54f870d5c0d3ca85d82b34b836405cfee7c08',
+            //     to: '0x1111111254fb6c44bac0bed2854e76f90643097d',
+            //     value: '0',
+            //     gasLimit:gasLimit
+            // }
+            // try {
+            //     const tx = await wallet.sendTransaction(txData)
+            //     console.log('swap tx:', tx.hash)
+            //     await tx.wait()
+            // } catch (err) {
+            //     errors.push(err.reason)
+            // }
             if (errors.length===0){
                 res.status('200').send({
                     success: true,

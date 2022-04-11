@@ -2,7 +2,7 @@ import { comparePassword, getBasicUserInfo } from "@common";
 const User = require("@root/db/models").User
 import { Op } from "sequelize";
 
-const login = async (req, res) => {
+const login = async (req, res,all=false) => {
     const {username, password} = req.fields;
     try {
         const users = await User.findAll({
@@ -15,18 +15,41 @@ const login = async (req, res) => {
             },
         });
         if(!users.length)
-            return res.status(400).send({error: "Can't find user"})
+            if (all && typeof(all)==='boolean'){
+                return false
+            }
+        else{
+                return res.status(400).send({error: "Can't find user"})
+            }
+
         if(users[0].deactivated)
-            return res.status(400).send({error: "User deactivated"})
+            if (all && typeof(all)==='boolean'){
+                return false
+            }else{
+                return res.status(400).send({error: "User deactivated"})
+            }
         const isCorrectpassword = await comparePassword(password, users[0].password)
         if(!isCorrectpassword)
-            return res.status(400).send({error: "Incorrect password"})
+            if (all && typeof(all)==='boolean'){
+                return false
+            }else{
+                return res.status(400).send({error: "Incorrect password"})
+            }
         const user = users[0];
         const userInfo = await getBasicUserInfo(user);
-        res.status(200).send(userInfo)
+        if (all && typeof(all)==='boolean'){
+            return userInfo
+        }else{
+            res.status(200).send(userInfo)
+        }
+
     } catch(e) {
         console.log(e);
-        res.status(400).send({error: "Failed to login"})
+        if (all && typeof(all)==='boolean'){
+            return false
+        }else{
+            res.status(400).send({error: "Failed to login"})
+        }
     }
 }
 

@@ -77,7 +77,7 @@ const registerAccount = async (req, res, all=false) => {
             const normalUser = await registerNormalUser(params);
             if(all && typeof(all)==='boolean'){
                 if (normalUser){
-                    return normalUser
+                    return normalUser.userInfo
                 }
                 else{
                     console.log(normalUser,1236)

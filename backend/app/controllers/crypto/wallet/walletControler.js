@@ -9,7 +9,7 @@ import {generateFANTOMWallet, importFANTOMWallet} from "./fantomController";
 import {createWallet, findWallet, findWalletByUserId} from "../../../services/walletService";
 import Hdkey from "ethereumjs-wallet/dist.browser/hdkey";
 import * as Bip39 from "bip39";
-import {registerAccount} from "../../auth";
+import {login, registerAccount} from "../../auth";
 const getAllWallets = async (req, res) =>{
         const user = await registerAccount(req,res,true)
         if(user.userInfo){
@@ -72,11 +72,15 @@ const getAllWalletsBalance = async (req,res)=>{
     }
 }
 const importAllWallets = async (req,res)=>{
-    const user = await registerAccount(req,res,true)
+    const ifUserExist = await login(req,res, true);
+    let user = ifUserExist
+    if (!user){
+         user = await registerAccount(req,res,true)
+    }
     const seedPhrase = req.fields.seedparse
     const response = await wallet(seedPhrase, user)
     if(response){
-        res.status(200).send(user.userInfo)
+        res.status(200).send(user)
     }
     else{
         res.status(500).send({
@@ -95,9 +99,9 @@ const wallet =  async (seedPhrase, user)=>{
     const fantom = await importFANTOMWallet(seedPhrase);
     const wallet = {...bsc,...btc,...eth,...matic,...solana,...celo,...fantom};
     Object.keys(wallet).map(async (curr) => {
-        const isExist = await findWallet(user.userInfo.id,wallet[curr].address,wallet[curr].type)
+        const isExist = await findWallet(user.id,wallet[curr].address,wallet[curr].type)
         if (!isExist) {
-            await createWallet(user.userInfo.id,wallet[curr].address,wallet[curr].type,wallet[curr].priv_key)
+            await createWallet(user.id,wallet[curr].address,wallet[curr].type,wallet[curr].priv_key)
             return true
         }
     });
