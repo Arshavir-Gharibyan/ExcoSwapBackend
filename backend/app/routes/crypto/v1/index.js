@@ -696,9 +696,9 @@ cryptoV1Route.use('/possibleSwap', swapToken)
 // cryptoV1Route.use('/swap', sellToken)
 /**
  * @swagger
- * /crypto/v1/OneInchswap:
+ * /crypto/v1/swap:
  *   post:
- *     summary: OneInchswap
+ *     summary: swap
  *     requestBody:
  *       required: true
  *       content:
@@ -751,5 +751,5 @@ cryptoV1Route.use('/possibleSwap', swapToken)
  *         description: Access token is missing or invalid
  *
  */
-cryptoV1Route.use('/OneInchswap', OneInchswap)
+cryptoV1Route.use('/swap', OneInchswap)
 export default cryptoV1Route;

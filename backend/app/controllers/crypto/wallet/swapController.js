@@ -1,14 +1,14 @@
 import {getUserByJwt, getUserWalletPrivKey} from "../../../services/userService";
 import {getExchangePrice, getSwapTokens, getUSDRate, imageExists} from "../../../services/swapService";
+import {utils} from "ethers";
 const fetch = require('isomorphic-fetch')
 const {  BigNumber, Wallet } = require('ethers')
 const providers = require('ethers').providers;
 const { formatUnits, parseUnits } = require('ethers/lib/utils')
-const priv = '0x02ec414c754f9405a3eaaeaf09517df77db43dc293b84645ad9e0b36296195b4'
 const  {OneInch}  = require('../../../services/OneInchService');
 const rpcUrls = {
     ETH: 'https://mainnet.infura.io/v3/c18b3b234e6d44509b167035389b0cd1',
-    BSC: 'https://bsc-dataseed1.ninicoin.io/',
+    BSC: 'https://bsc-dataseed.binance.org/',
 }
 
 const slugToChainId = {
@@ -33,15 +33,16 @@ const swapForTokens = async (req,res)=>{
             const amount = parseUnits(formattedAmount, req.fields.sellTokenDecimals).toString()
             const oneInch = new OneInch()
             const result =  await oneInch.getQuote({ chainId, fromTokenAddress, toTokenAddress, amount })
-            const resultUSD = await getUSDRate();
-            const fee = (result.estimatedGas)*Math.pow(10,-18)
+            const resultUSDSellToken = await getUSDRate(req.fields.sellTokenSymbol);
+            const resultUSD = await getUSDRate('ETH');
+            const fee = (result.estimatedGas)*Math.pow(10,-9)
             const toTokenAmountFormatted = formatUnits(result.toTokenAmount, req.fields.buyTokenDecimals)
             if (result){
                 res.status('200').send({
                     buyAmount:toTokenAmountFormatted,
-                    // sellAmountInUsd:(resultUSD.USD*req.fields.sellAmount).toFixed(2),
-                    // feeInSellAmountUsd:fee*resultUSD.USD,
-                    // feeInSellAmountETH:fee
+                    sellAmountInUsd:(resultUSDSellToken.USD*req.fields.sellAmount).toFixed(2),
+                    feeInSellAmountUsd:fee*resultUSD.USD,
+                    feeInSellAmountETH:fee
                 }) ;
             }else{
                 res.status('404').send({
@@ -154,8 +155,8 @@ const swapTokensOneInch = async (req,res)=>{
             const chain = walletType
             const rpcUrl = rpcUrls[chain]
             const provider = new providers.StaticJsonRpcProvider(rpcUrl)
-            const wallet = new Wallet(priv, provider)
-            console.log(wallet,1596)
+            const priv = await getUserWalletPrivKey(user.id,walletType)
+            const wallet = new Wallet(priv.dataValues.private_key, provider)
             const oneInch = new OneInch()
             const chainId = slugToChainId[chain]
             const fromToken = sellTokenSymbol
@@ -173,7 +174,6 @@ const swapTokensOneInch = async (req,res)=>{
             const toTokenAddress = req.fields.buyTokenAddress
             const quote = await oneInch.getQuote({ chainId, fromTokenAddress, toTokenAddress, amount })
             const toTokenAmount =quote.toTokenAmount
-            const gasLimit = quote.estimatedGas
             const toTokenAmountFormatted = formatUnits(toTokenAmount, req.fields.buyTokenDecimals)
             console.log(`toTokenAmount: ${toTokenAmountFormatted}`)
             const tokenAddress = fromTokenAddress

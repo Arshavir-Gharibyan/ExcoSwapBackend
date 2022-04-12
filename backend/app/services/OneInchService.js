@@ -1,19 +1,6 @@
 const fetch = require('isomorphic-fetch')
 const { providers, BigNumber, Wallet } = require('ethers')
 const { formatUnits, parseUnits } = require('ethers/lib/utils')
-const priv = '0x02ec414c754f9405a3eaaeaf09517df77db43dc293b84645ad9e0b36296195b4'
-
-const rpcUrls = {
-    ethereum: 'https://mainnet.infura.io',
-    polygon: 'https://polygon.infura.io',
-    bnb: 'https://xdai.infura.io'
-}
-
-const slugToChainId = {
-    ethereum: 1,
-    polygon: 137,
-    bnb: 56
-}
 class OneInch {
     constructor () {
         this.baseUrl = 'https://api.1inch.exchange/v4.0'

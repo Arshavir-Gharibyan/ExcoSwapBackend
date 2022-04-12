@@ -12,11 +12,11 @@ import * as Bip39 from "bip39";
 import {login, registerAccount} from "../../auth";
 const getAllWallets = async (req, res) =>{
         const user = await registerAccount(req,res,true)
-        if(user.userInfo){
+        if(user){
             const seedPhrase = req.fields.seedparse
             const response = await wallet(seedPhrase, user)
             if(response){
-                res.status(200).send(user.userInfo)
+                res.status(200).send(user)
             }
             else{
                 res.status(500).send({

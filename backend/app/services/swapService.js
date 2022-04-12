@@ -19,9 +19,9 @@ const getSwapTokens= async()=>{
     );
     return response.json();
 }
-const getUSDRate= async()=>{
+const getUSDRate= async(symbol)=>{
     const response = await fetch(
-        `https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BTC,USD,EUR`
+        `https://min-api.cryptocompare.com/data/price?fsym=${symbol}&tsyms=BTC,USD,EUR`
     );
     return response.json();
 }
