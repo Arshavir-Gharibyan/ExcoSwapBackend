@@ -21,7 +21,6 @@ module.exports = (sequelize, DataTypes) => {
     lastName: DataTypes.STRING,
     email: {
       type: DataTypes.STRING,
-      unique: true
     },
     type: DataTypes.STRING, // enum: user, creator
     password: DataTypes.STRING,

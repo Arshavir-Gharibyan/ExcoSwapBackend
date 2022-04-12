@@ -13,9 +13,9 @@ const getExchangePrice= async(sellToken,buyToken,sellAmount)=>{
     );
     return response.json();
 }
-const getSwapTokens= async(chainId)=>{
+const getSwapTokens= async()=>{
     const response = await fetch(
-        `https://api.1inch.exchange/v4.0/${chainId}/tokens`
+        `https://api.1inch.exchange/v4.0/1/tokens`
     );
     return response.json();
 }
