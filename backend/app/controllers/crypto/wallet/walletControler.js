@@ -2,7 +2,7 @@ import {getUserByJwt, getUserSeedPhrase} from "../../../services/userService";
 import {generateBSCWallet, getBinanceBalance, importBSCWallet} from "./binanceController";
 import {generateBTCWallet, importBTCWallet} from "./bitcoinController";
 import {generateETHWallet, getEthBalance, importETHWallet} from "./ethController";
-import {generateMATICWallet, importMATICWallet} from "./maticContoller";
+import {generateMATICWallet, getMaticBalance, importMATICWallet} from "./maticContoller";
 import {generateSOLANAWallet, getSolanaBalance, importSOLANAWallet} from "./solanaController";
 import {generateCELOWallet, importCELOWallet} from "./celoController";
 import {generateFANTOMWallet, importFANTOMWallet} from "./fantomController";
@@ -55,9 +55,10 @@ const getAllWalletsBalance = async (req,res)=>{
         const user = await getUserByJwt(req);
         if(user){
             const bsc = await getBinanceBalance(req,res,true);
+            const matic = await getMaticBalance(req,res,true);
             const solana = await getSolanaBalance(req,res, true);
             const eth =  await getEthBalance(req,res, true);
-            const balance = {...bsc,...solana,...eth};
+            const balance = {...bsc,...solana,...eth,...matic};
             res.status(200).send(balance)
         }else{
             res.status(401).send({

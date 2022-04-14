@@ -11,7 +11,6 @@ import getBitcoinBalance from "./getBitcoinBalance";
 import getBinanceBal from "./getBinanceBalance";
 import getEthereumBalance from "./getEthereumBalance";
 import getCeloBalance from "./getCeloBalance";
-import getMaticBalance from "./getMaticBalance";
 import getBalance from "./getBalance";
 import getWallet        from "./wallet/getWallet";
 import getWalletGet        from "./wallet/getWalletGet";
@@ -501,30 +500,6 @@ cryptoV1Route.use('/ETHBalance', getEthereumBalance)
 //  *
 //  */
 cryptoV1Route.use('/CELOBalance', getCeloBalance)
-// /**
-//  * @swagger
-//  * /crypto/v1/MATICBalance:
-//  *   get:
-//  *     summary: Returned  polygon balance for user
-//  *     security:
-//  *       - bearerAuth: []
-//  *     responses:
-//  *       200:
-//  *         description: Success
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *                type: object
-//  *                properties:
-//  *                  balance:
-//  *                    type: string
-//  *                    description: The user balance for polygon.
-//  *                    example: 0
-//  *       401:
-//  *         description: Access token is missing or invalid
-//  *
-//  */
-cryptoV1Route.use('/MATICBalance', getMaticBalance)
 // /**
 //  * @swagger
 //  * /crypto/v1/SOLANABalance:

@@ -151,7 +151,7 @@ const swapTokensOneInch = async (req,res)=>{
         const takerAddress =  req.fields.walletAddress
         const walletType = req.fields.walletType
         if(user){
-            const errors = [];
+            let errors = [];
             const chain = walletType
             const rpcUrl = rpcUrls[chain]
             const provider = new providers.StaticJsonRpcProvider(rpcUrl)
@@ -183,11 +183,14 @@ const swapTokensOneInch = async (req,res)=>{
                 try{
                     const txData = await oneInch.getApproveTx({ chainId, tokenAddress, amount })
                     console.log('approval data:', txData)
+                    if (chainId === 56){
+                        txData.value = '0x'+ txData.value;
+                    }
                     const tx = await wallet.sendTransaction(txData)
                     console.log('approval tx:', tx.hash)
                     await tx.wait()
                 }catch(err){
-                    errors.push(err)
+                    errors.push(err.reason?err.reason:err.message)
                 }
 
             }
@@ -195,11 +198,14 @@ const swapTokensOneInch = async (req,res)=>{
                 const fromAddress = walletAddress
                 const txData = await oneInch.getSwapTx({ chainId, fromTokenAddress, toTokenAddress, fromAddress, amount, slippage })
                 console.log('swap data:', txData)
+                if (chainId === 56){
+                    txData.value = '0x'+ txData.value;
+                }
                 const tx = await wallet.sendTransaction(txData)
                 console.log('swap tx:', tx.hash)
                 await tx.wait()
             }catch (err){
-                errors.push(err)
+                errors.push(err.reason?err.reason:err.message)
             }
             if (errors.length===0){
                 res.status('200').send({
