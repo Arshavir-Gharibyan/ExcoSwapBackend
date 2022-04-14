@@ -9,6 +9,7 @@ const  {OneInch}  = require('../../../services/OneInchService');
 const rpcUrls = {
     ETH: 'https://mainnet.infura.io/v3/c18b3b234e6d44509b167035389b0cd1',
     BSC: 'https://bsc-dataseed.binance.org/',
+
 }
 
 const slugToChainId = {
@@ -184,8 +185,9 @@ const swapTokensOneInch = async (req,res)=>{
                     const txData = await oneInch.getApproveTx({ chainId, tokenAddress, amount })
                     console.log('approval data:', txData)
                     if (chainId === 56){
-                        txData.value = '0x'+ txData.value;
+                        txData.value =  '0x'+parseInt(txData.value).toString(16)
                     }
+
                     const tx = await wallet.sendTransaction(txData)
                     console.log('approval tx:', tx.hash)
                     await tx.wait()
@@ -199,12 +201,13 @@ const swapTokensOneInch = async (req,res)=>{
                 const txData = await oneInch.getSwapTx({ chainId, fromTokenAddress, toTokenAddress, fromAddress, amount, slippage })
                 console.log('swap data:', txData)
                 if (chainId === 56){
-                    txData.value = '0x'+ txData.value;
+                    txData.value = '0x'+parseInt(txData.value).toString(16)
                 }
                 const tx = await wallet.sendTransaction(txData)
                 console.log('swap tx:', tx.hash)
                 await tx.wait()
             }catch (err){
+                console.log(err)
                 errors.push(err.reason?err.reason:err.message)
             }
             if (errors.length===0){
