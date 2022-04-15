@@ -70,8 +70,9 @@ const getSwapTokensList= async(req,res)=>{
         const user = await getUserByJwt(req);
         if(user){
             const result = await getSwapTokens()
+
             res.status('200').send({
-                result: result.tokens
+                result: result
             }) ;
         }
         else{
@@ -142,7 +143,7 @@ const swapTokensSell = async (req,res)=>{
             error: "unauthorized"
         });
     }
-}
+}//0x example
 const swapTokensOneInch = async (req,res)=>{
     if (req.headers && req.headers.authorization) {
         const user = await getUserByJwt(req);

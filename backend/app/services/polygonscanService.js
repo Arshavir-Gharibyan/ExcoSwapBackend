@@ -1,7 +1,7 @@
 import axios from "axios";
 const getAddressTransferEvents = async (address)=>{
     try {
-        return  await axios.get(process.env.POLYGONSCAN_API_URL +`?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=10sort=asc&apikey=${process.env.POLYGONSCAN_API_KEY}`,
+        return  await axios.get(process.env.POLYGONSCAN_API_URL +`?module=account&action=tokentx&address=${address}&startblock=0&endblock=99999999&page=1&offset=5&sort=asc&apikey=${process.env.POLYGONSCAN_API_KEY}`,
         );
     } catch (error) {
         return(error)
@@ -9,7 +9,6 @@ const getAddressTransferEvents = async (address)=>{
 }
 const getListContractAddresses = async (data)=>{
     const contractAddresses = [];
-
     data.result.forEach((curr) => {
         if (!contractAddresses.includes(curr.contractAddress)) {
             contractAddresses.push(curr.contractAddress);
@@ -32,6 +31,7 @@ const getTokenInfoFromContractAddress = async (balance)=>{
     let result = [];
     const getData = async (curr) => {
         const data = await axios.get(process.env.POLYGONSCAN_API_URL + `?module=token&action=tokeninfo&contractaddress=${curr.coin_address}&apikey=${process.env.POLYGONSCAN_API_KEY}`)
+
         if (Array.isArray(data.data.result)) {
             return data;
         } else {

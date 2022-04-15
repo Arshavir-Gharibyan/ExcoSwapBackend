@@ -55,10 +55,10 @@ const getAllWalletsBalance = async (req,res)=>{
         const user = await getUserByJwt(req);
         if(user){
             const bsc = await getBinanceBalance(req,res,true);
-            const matic = await getMaticBalance(req,res,true);
+            //const matic = await getMaticBalance(req,res,true);
             const solana = await getSolanaBalance(req,res, true);
             const eth =  await getEthBalance(req,res, true);
-            const balance = {...bsc,...solana,...eth,...matic};
+            const balance = {...bsc,...solana,...eth};
             res.status(200).send(balance)
         }else{
             res.status(401).send({
