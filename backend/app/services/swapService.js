@@ -1,5 +1,6 @@
 import {XMLHttpRequest} from "xmlhttprequest";
 import axios from "axios";
+import tokens from "../routes/api/v1/tokens";
 
 const qs = require('qs');
 const getExchangePrice= async(sellToken,buyToken,sellAmount)=>{
@@ -13,21 +14,26 @@ const getExchangePrice= async(sellToken,buyToken,sellAmount)=>{
     );
     return response.json();
 }
-const getSwapTokens= async()=>{
+const getSwapTokens = async()=>{
     const response1 = await fetch(
         `https://api.1inch.exchange/v4.0/1/tokens`
     )
-    const response1json = await response1.json()
+    const response1json = await response1.json();
+    const ethResponse =  {'eth':response1json};
+
     const response56 = await fetch(
         `https://api.1inch.exchange/v4.0/56/tokens`
     )
     const response56json = await response56.json()
+    const bscResponse = {'bsc':response56json}
+
     const response137 = await fetch(
         `https://api.1inch.exchange/v4.0/137/tokens`
     )
     const response137json = await response137.json()
-    const response = {...response1json.tokens, ...response56json.tokens,...response137json.tokens}
+    const polygonResponse = {'pol':response137json}
 
+    const response = {...ethResponse,...bscResponse,...polygonResponse}
     return response;
 }
 const getUSDRate= async(symbol)=>{
