@@ -58,14 +58,14 @@ const getAllWalletsBalance = async (req,res)=>{
             const matic = await getMaticBalance(req,res,true);
             const solana = await getSolanaBalance(req,res, true);
             const eth =  await getEthBalance(req,res, true);
-            const fantom = await getFANTOMBalance(req,res,true)
+           // const fantom = await getFANTOMBalance(req,res,true)
 
-            const balance = {...bsc,...solana,...eth,...matic,...fantom};
+            const balance = {...bsc,...solana,...eth,...matic}
             res.status(200).send(balance)
         }else{
             res.status(401).send({
                 error: "unauthorized"
-            });
+            })
         }
     }
     else{
