@@ -5,4 +5,4 @@ const getEthereumBalance = Router();
 
 getEthereumBalance.get('/', asyncHandler(getEthBalance));
 
-export default getEthereumBalance;
+export default getEthereumBalance

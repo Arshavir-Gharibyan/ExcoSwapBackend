@@ -8,7 +8,7 @@ const getAddressTransferEvents = async (address)=>{
     }
 }
 const getListContractAddresses = async (data)=>{
-    const contractAddresses = [];
+    const contractAddresses = []
     data.result.forEach((curr) => {
         if (!contractAddresses.includes(curr.contractAddress)) {
             contractAddresses.push(curr.contractAddress);
@@ -35,14 +35,14 @@ const getTokenInfoFromContractAddress = async (balance)=>{
         if (Array.isArray(data.data.result)) {
             return data;
         } else {
-            return await getData(curr);
+            return await getData(curr)
         }
     }
     await Promise.all(balance.map(async (curr) => {
         const info = await getData(curr);
         if(info.data.result[0].symbol){
             const currentRes ={
-                'img':`https://etherscan.io/token/images/${info.data.result[0].symbol.toLowerCase()}_28.png`,
+                'img':`https://polygonscan.com/token/images/${info.data.result[0].symbol.toLowerCase()}_32.png`,
                 'coin':info.data.result[0].symbol,
                 'balance':(curr.balance/Math.pow(10,info.data.result[0].divisor)).toString().includes('e-')? 0:curr.balance/Math.pow(10,info.data.result[0].divisor),
                 'coin_address': curr.coin_address
@@ -53,4 +53,4 @@ const getTokenInfoFromContractAddress = async (balance)=>{
 
     return result
 }
-export {getAddressTransferEvents,getListContractAddresses,getTokenBalanceFromContractAddress,getTokenInfoFromContractAddress}
+export {getAddressTransferEvents,getListContractAddresses,getTokenBalanceFromContractAddress,getTokenInfoFromContractAddress,}

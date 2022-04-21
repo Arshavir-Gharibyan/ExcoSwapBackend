@@ -18,8 +18,8 @@ const getSwapTokens = async()=>{
     const response1 = await fetch(
         `https://api.1inch.exchange/v4.0/1/tokens`
     )
-    const response1json = await response1.json();
-    const ethResponse =  {'eth':response1json};
+    const response1json = await response1.json()
+    const ethResponse =  {'eth':response1json}
 
     const response56 = await fetch(
         `https://api.1inch.exchange/v4.0/56/tokens`

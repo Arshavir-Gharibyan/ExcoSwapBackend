@@ -9,12 +9,14 @@ const  {OneInch}  = require('../../../services/OneInchService');
 const rpcUrls = {
     ETH: 'https://mainnet.infura.io/v3/c18b3b234e6d44509b167035389b0cd1',
     BSC: 'https://bsc-dataseed.binance.org/',
+    POL: 'https://autumn-snowy-glade.matic.quiknode.pro/89a10094f36dc6b2e98c78f377939f947c870d5f/'
 
 }
 
 const slugToChainId = {
     ETH: 1,
-    BSC: 56
+    BSC: 56,
+    POL: 137
 }
 const abi = require('erc-20-abi')
 const qs = require('qs');

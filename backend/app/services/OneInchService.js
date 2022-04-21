@@ -9,10 +9,11 @@ class OneInch {
     async getQuote (config) {
         const { chainId, fromTokenAddress, toTokenAddress, amount } = config
         if (!chainId) {
+            console.log(chainId,1111)
             throw new Error('chainId is required')
         }
         if (!fromTokenAddress) {
-            throw new Error('fromTokenAddrss is required')
+            throw new Error('fromTokenAddress is required')
         }
         if (!toTokenAddress) {
             throw new Error('toTokenAddress is required')
@@ -89,7 +90,7 @@ class OneInch {
             throw new Error('chainId is required')
         }
         if (!fromTokenAddress) {
-            throw new Error('fromTokenAddrss is required')
+            throw new Error('fromTokenAddress is required')
         }
         if (!toTokenAddress) {
             throw new Error('toTokenAddress is required')

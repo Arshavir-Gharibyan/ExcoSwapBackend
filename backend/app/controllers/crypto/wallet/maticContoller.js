@@ -83,8 +83,12 @@ const getMaticBalance =  async (req, res, all=false) =>{
         if(user){
             const walletMatic = await findWalletByType(user.id, 'MATIC');
             const tokenTransferEvents = await getAddressTransferEvents(walletMatic[0].address)
+            //console.log(tokenTransferEvents,55555)
             const contractAddresses = await getListContractAddresses(tokenTransferEvents.data)
+            //console.log(contractAddresses)
+            //console.log(tokenTransferEvents.data,212222)
             const balance = await getTokenBalanceFromContractAddress(contractAddresses,walletMatic[0].address)
+            //console.log(balance,1111111)
             const tokenInfo = await getTokenInfoFromContractAddress(balance)
             const addressBalance = await getAddressBalance(walletMatic[0].address,'polygon')
             if(tokenInfo && Object.keys(tokenInfo).length){
