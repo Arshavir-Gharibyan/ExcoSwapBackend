@@ -7,14 +7,16 @@ const getAddressTransferEvents = async (address)=>{
         return(error)
     }
 }
-const getListContractAddresses = async (data)=>{
+const getListContractAddresses = async (data)=> {
+    if (data !== null) {
     const contractAddresses = []
     data.result.forEach((curr) => {
         if (!contractAddresses.includes(curr.contractAddress)) {
             contractAddresses.push(curr.contractAddress);
         }
-    });
+    })
     return contractAddresses
+    }
 }
 const getTokenBalanceFromContractAddress = async (contractaddresses, address) =>{
     let result = [];

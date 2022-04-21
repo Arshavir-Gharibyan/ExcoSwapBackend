@@ -9,14 +9,14 @@ const  {OneInch}  = require('../../../services/OneInchService');
 const rpcUrls = {
     ETH: 'https://mainnet.infura.io/v3/c18b3b234e6d44509b167035389b0cd1',
     BSC: 'https://bsc-dataseed.binance.org/',
-    POL: 'https://autumn-snowy-glade.matic.quiknode.pro/89a10094f36dc6b2e98c78f377939f947c870d5f/'
+    MATIC: 'https://autumn-snowy-glade.matic.quiknode.pro/89a10094f36dc6b2e98c78f377939f947c870d5f/'
 
 }
 
 const slugToChainId = {
     ETH: 1,
     BSC: 56,
-    POL: 137
+    MATIC: 137
 }
 const abi = require('erc-20-abi')
 const qs = require('qs');
@@ -46,11 +46,11 @@ const swapForTokens = async (req,res)=>{
                     sellAmountInUsd:(resultUSDSellToken.USD*req.fields.sellAmount).toFixed(2),
                     feeInSellAmountUsd:fee*resultUSD.USD,
                     feeInSellAmountETH:fee
-                }) ;
+                })
             }else{
                 res.status('404').send({
                     result:result.validationErrors
-                }) ;
+                })
             }
 
         }
@@ -155,7 +155,7 @@ const swapTokensOneInch = async (req,res)=>{
         const takerAddress =  req.fields.walletAddress
         const walletType = req.fields.walletType
         if(user){
-            let errors = [];
+            let errors = []
             const chain = walletType
             const rpcUrl = rpcUrls[chain]
             const provider = new providers.StaticJsonRpcProvider(rpcUrl)
@@ -179,10 +179,8 @@ const swapTokensOneInch = async (req,res)=>{
             const quote = await oneInch.getQuote({ chainId, fromTokenAddress, toTokenAddress, amount })
             const toTokenAmount =quote.toTokenAmount
             const toTokenAmountFormatted = formatUnits(toTokenAmount, req.fields.buyTokenDecimals)
-            console.log(`toTokenAmount: ${toTokenAmountFormatted}`)
             const tokenAddress = fromTokenAddress
             const allowance = await oneInch.getAllowance({ chainId, tokenAddress, walletAddress })
-            console.log('allowance:', allowance)
             if (BigNumber.from(allowance).lt(amount)) {
                 try{
                     const txData = await oneInch.getApproveTx({ chainId, tokenAddress, amount })
@@ -190,14 +188,13 @@ const swapTokensOneInch = async (req,res)=>{
                     if (chainId === 56){
                         txData.value =  '0x'+parseInt(txData.value).toString(16)
                     }
-
+                    console.log(txData.value,33333)
                     const tx = await wallet.sendTransaction(txData)
                     console.log('approval tx:', tx.hash)
                     await tx.wait()
                 }catch(err){
                     errors.push(err.reason?err.reason:err.message)
                 }
-
             }
             try {
                 const fromAddress = walletAddress
