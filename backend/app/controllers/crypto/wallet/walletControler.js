@@ -60,7 +60,7 @@ const getAllWalletsBalance = async (req,res)=>{
             const eth =  await getEthBalance(req,res, true);
            // const fantom = await getFANTOMBalance(req,res,true)
 
-            const balance = {...bsc,...solana,...eth,...matic}
+            const balance = {...bsc,...eth,...matic,...solana}
             res.status(200).send(balance)
         }else{
             res.status(401).send({

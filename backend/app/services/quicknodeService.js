@@ -10,12 +10,11 @@ const addressTokenBalanceSOLANA = async (address)=>{
     }
 
     try {
-
         const publicKey = new solanaWeb3.PublicKey(address);
         const programId = new solanaWeb3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
         const response = await Solana.getParsedTokenAccountsByOwner(publicKey,{
         programId: programId
-        });
+        })
         const tokensArray = response.value;
         if (tokensArray.length ===0){
             return false

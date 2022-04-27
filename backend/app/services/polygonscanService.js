@@ -51,7 +51,7 @@ const getTokenInfoFromContractAddress = async (balance)=>{
             }
             result.push({...currentRes})
         }
-    }));
+    }))
 
     return result
 }

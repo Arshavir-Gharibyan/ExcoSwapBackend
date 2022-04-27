@@ -5,7 +5,8 @@ const fetch = require('isomorphic-fetch')
 const {  BigNumber, Wallet } = require('ethers')
 const providers = require('ethers').providers;
 const { formatUnits, parseUnits } = require('ethers/lib/utils')
-const  {OneInch}  = require('../../../services/OneInchService');
+const  {OneInch}  = require('../../../services/OneInchService')
+//const {jupiter} = require('../../../services/jupiterService')
 const rpcUrls = {
     ETH: 'https://mainnet.infura.io/v3/c18b3b234e6d44509b167035389b0cd1',
     BSC: 'https://bsc-dataseed.binance.org/',
@@ -186,9 +187,8 @@ const swapTokensOneInch = async (req,res)=>{
                     const txData = await oneInch.getApproveTx({ chainId, tokenAddress, amount })
                     console.log('approval data:', txData)
                     if (chainId === 56){
-                        txData.value =  '0x'+parseInt(txData.value).toString(16)
+                        txData.value =  '0x' + parseInt(txData.value).toString(16)
                     }
-                    console.log(txData.value,33333)
                     const tx = await wallet.sendTransaction(txData)
                     console.log('approval tx:', tx.hash)
                     await tx.wait()
@@ -201,7 +201,7 @@ const swapTokensOneInch = async (req,res)=>{
                 const txData = await oneInch.getSwapTx({ chainId, fromTokenAddress, toTokenAddress, fromAddress, amount, slippage })
                 console.log('swap data:', txData)
                 if (chainId === 56){
-                    txData.value = '0x'+parseInt(txData.value).toString(16)
+                  txData.value = '0x'+parseInt(txData.value).toString(16)
                 }
                 const tx = await wallet.sendTransaction(txData)
                 console.log('swap tx:', tx.hash)

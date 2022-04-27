@@ -9,7 +9,6 @@ class OneInch {
     async getQuote (config) {
         const { chainId, fromTokenAddress, toTokenAddress, amount } = config
         if (!chainId) {
-            console.log(chainId,1111)
             throw new Error('chainId is required')
         }
         if (!fromTokenAddress) {
@@ -31,7 +30,8 @@ class OneInch {
         const { toTokenAmount } = result
         const {estimatedGas} = result
         return {'toTokenAmount':toTokenAmount,
-             'estimatedGas': estimatedGas}
+             'estimatedGas': estimatedGas
+        }
     }
 
     async getAllowance (config) {
@@ -68,14 +68,23 @@ class OneInch {
             throw new Error('amount is required')
         }
 
-        const url = `${this.baseUrl}/${chainId}/approve/transaction?&amount=${amount}&tokenAddress=${tokenAddress}`
+        const url = `${this.baseUrl}/${chainId}/approve/transaction?&tokenAddress=${tokenAddress}&amount=${amount}`
         const result = await this.getJson(url)
         if (!result.data) {
             console.log(result)
             throw new Error('expected tx data')
         }
+        if (chainId===137){
+            const { data, to, value,gasPrice} = result
 
-        const { data, to, value } = result
+            return {
+                data,
+               gasPrice,
+                to,
+                value
+            }
+        }
+        const { data, to, value} = result
 
         return {
             data,
@@ -107,11 +116,20 @@ class OneInch {
         const url = `${this.baseUrl}/${chainId}/swap?fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&amount=${amount}&fromAddress=${fromAddress}&slippage=${slippage}`
         const result = await this.getJson(url)
         if (!result.tx) {
-            console.log(result)
             throw new Error('expected tx data')
         }
+        if(chainId===137){
+            const {data, to, value,gasPrice } = result.tx
 
-        const { data, to, value } = result.tx
+            return {
+                data,
+                to,
+                value,
+                gasPrice
+            }
+        }
+
+        const {data, to, value } = result.tx
 
         return {
             data,
@@ -136,5 +154,5 @@ class OneInch {
 }
 module.exports = {
     OneInch
-};
+}
 
