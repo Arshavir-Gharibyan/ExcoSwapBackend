@@ -36,10 +36,19 @@ const getSwapTokens = async()=>{
     const response = {...ethResponse,...bscResponse,...polygonResponse}
     return response;
 }
+const getSwapTokensSolana = async()=>{
+
+    const response = await fetch(
+        `https://quote-api.jup.ag/v1/indexed-route-map?onlyDirectRoutes=true`
+    )
+    const routeMap = await response.json()
+    const listAddresses = routeMap.mintKeys
+    return routeMap;
+}
 const getUSDRate= async(symbol)=>{
     const response = await fetch(
         `https://min-api.cryptocompare.com/data/price?fsym=${symbol}&tsyms=BTC,USD,EUR`
     );
     return response.json();
 }
-export{getExchangePrice,getSwapTokens,getUSDRate}
+export{getExchangePrice,getSwapTokens,getUSDRate,getSwapTokensSolana}

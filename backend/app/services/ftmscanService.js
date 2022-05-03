@@ -9,66 +9,39 @@ const getAddressTransferEvents = async (address) => {
     }
 }
 const getListContractAddresses = async (data) => {
-    const contractAddresses = []
-
+    const cAddresses = []
     data.result.forEach((curr) => {
-        if (!contractAddresses.includes(curr.contractAddress)) {
-            contractAddresses.push(curr.contractAddress);
-        }
+        const contractAddresses = {
+            address: curr.contractAddress,
+            tokenName: curr.tokenName,
+            tokenSymbol: curr.tokenSymbol,
+            tokenDivisor: curr.tokenDecimal
+        };
+        cAddresses.every(item => item.address !== curr.contractAddress) && cAddresses.push(contractAddresses)
     })
-    return contractAddresses
+    return cAddresses
 }
-// const getTokenBalanceFromContractAddress = async (contractaddresses, address) =>{
-//     let result = []
-//     function sleep(milliseconds) {
-//         let start = new Date().getTime();
-//         for (let i = 0; i < 1e7; i++) {
-//             if ((new Date().getTime() - start) > milliseconds){
-//                 break;
-//             }
-//         }
-//     }
-//     await Promise.all(contractaddresses.map(async (curr,index) => {
-//         if(index%5===0){
-//              sleep(5000)
-//         }else{
-//             const balance = await axios.get(process.env.FTMSCAN_API_URL + `?module=account&action=tokenbalance&contractaddress=${curr}&address=${address}&tag=latest&apikey=${process.env.FTMSCAN_API_KEY}`)
-//             result.push({
-//                 'balance': balance.data.result,
-//                 'coin_address': curr
-//             })
-//         }
-//     }))
-//     return  result
-// }
 
 const getTokenBalanceFromContractAddress = async (contractaddresses, address) => {
     const result = []
     const getData = async (item, i) => {
-
-        function sleep(milliseconds) {
-            console.log('in sleep')
-            let start = new Date().getTime();
-            for (let i = 0; i < 1e7; i++) {
-                if ((new Date().getTime() - start) > milliseconds) {
-                    break;
-                }
-            }
+if (item){
+    try {
+        const res = await axios.get(process.env.FTMSCAN_API_URL + `?module=account&action=tokenbalance&contractaddress=${item.address}&address=${address}&tag=latest&apikey=${process.env.FTMSCAN_API_KEY}`)
+        const data = res.data
+        if (data.result !== '0') {
+            result.push({
+                'balance': data.result,
+                'coin_address': item.address,
+                'coin_name':item.tokenName,
+                'coin_symbol':item.tokenSymbol,
+                'divisor':item.tokenDivisor
+            })
         }
-
-        try {
-            const res = await axios.get(process.env.FTMSCAN_API_URL + `?module=account&action=tokenbalance&contractaddress=${item}&address=${address}&tag=latest&apikey=${process.env.FTMSCAN_API_KEY}`)
-            const data = res.data
-
-            if (data.result !== '0') {
-                result.push({
-                    'balance': data.result,
-                    'coin_address': item
-                })
-            }
-        } catch (e) {
-            console.error('error', e)
-        }
+    } catch (e) {
+        console.error('error', e)
+    }
+}
     }
     for (let index = 1; index <= contractaddresses.length; index++) {
         await getData(contractaddresses[index], index)
@@ -77,21 +50,17 @@ const getTokenBalanceFromContractAddress = async (contractaddresses, address) =>
 }
 
 const getTokenInfoFromContractAddress = async (balance) => {
-    let result = {};
+    let result = [];
+      await Promise.all(balance.map(async (curr) => {
+            const currentRes ={
+                'img':`https://ftmscan.com/token/images/${curr.coin_name.toLowerCase()}_32.png`,
+                'coin':curr.coin_symbol,
+                'balance':(curr.balance/Math.pow(10,curr.divisor)).toString().includes('e-')? 0:curr.balance/Math.pow(10,curr.divisor),
+                'coin_address': curr.coin_address
+            }
+          result.push({...currentRes})
 
-    // await Promise.all(balance.map(async (curr) => {
-    //     const info = await axios.get(process.env.ETHERSCAN_API_URL + `?module=token&action=tokeninfo&contractaddress=${curr.coin_address}&apikey=${process.env.ETHERSCAN_API_KEY}`)
-    //    console.log(info)
-    //     if(info.data.result[0].symbol){
-    //         const currentRes ={
-    //             'img':`https://ftmscan.com//token/images/${info.data.result[0].symbol.toLowerCase()}_32.png`,
-    //             'coin':info.data.result[0].symbol,
-    //             'balance':(curr.balance/Math.pow(10,info.data.result[0].divisor)).toString().includes('e-')? 0:curr.balance/Math.pow(10,info.data.result[0].divisor),
-    //             'coin_address': curr.coin_address
-    //         }
-    //         result={...currentRes}
-    //     }
-    // }));
+    }));
     return result
 }
 export {

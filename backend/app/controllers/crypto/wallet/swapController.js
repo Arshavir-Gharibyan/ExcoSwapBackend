@@ -1,16 +1,23 @@
 import {getUserByJwt, getUserWalletPrivKey} from "../../../services/userService";
-import {getExchangePrice, getSwapTokens, getUSDRate, imageExists} from "../../../services/swapService";
-import {utils} from "ethers";
+import {
+    getExchangePrice,
+    getSwapTokens,
+    getSwapTokensSolana,
+    getUSDRate,
+    imageExists
+} from "../../../services/swapService";
 const fetch = require('isomorphic-fetch')
 const {  BigNumber, Wallet } = require('ethers')
 const providers = require('ethers').providers;
 const { formatUnits, parseUnits } = require('ethers/lib/utils')
 const  {OneInch}  = require('../../../services/OneInchService')
-//const {jupiter} = require('../../../services/jupiterService')
+const {Jupiter} = require('../../../services/jupiterService')
 const rpcUrls = {
     ETH: 'https://mainnet.infura.io/v3/c18b3b234e6d44509b167035389b0cd1',
     BSC: 'https://bsc-dataseed.binance.org/',
-    MATIC: 'https://autumn-snowy-glade.matic.quiknode.pro/89a10094f36dc6b2e98c78f377939f947c870d5f/'
+    MATIC: 'https://autumn-snowy-glade.matic.quiknode.pro/89a10094f36dc6b2e98c78f377939f947c870d5f/',
+    //, SOlANA: 'https://rough-silent-shape.solana-mainnet.quiknode.pro/43c04ea46b6f7b073cf53f35aff8c3b6a413820b/'
+    SOLANA: 'https://ssc-dao.genesysgo.net'
 
 }
 
@@ -74,6 +81,27 @@ const getSwapTokensList= async(req,res)=>{
         if(user){
             const result = await getSwapTokens()
 
+            res.status('200').send({
+                result: result
+            }) ;
+        }
+        else{
+            res.status('401').send({
+                error: "unauthorized"
+            }) ;
+        }
+    }
+    else{
+        res.status('401').send({
+            error: "unauthorized"
+        });
+    }
+}
+const getSwapTokensListSolana= async(req,res)=>{
+    if (req.headers && req.headers.authorization) {
+        const user = await getUserByJwt(req);
+        if(user){
+            const result = await getSwapTokensSolana()
             res.status('200').send({
                 result: result
             }) ;
@@ -155,7 +183,15 @@ const swapTokensOneInch = async (req,res)=>{
         const sellAmount = req.fields.sellAmount*Math.pow(10,req.fields.sellTokenDecimals);
         const takerAddress =  req.fields.walletAddress
         const walletType = req.fields.walletType
+
         if(user){
+            if (walletType === "SOLANA"){
+                const jupiter = new Jupiter()
+                console.log(jupiter,98999)
+
+
+            }
+
             let errors = []
             const chain = walletType
             const rpcUrl = rpcUrls[chain]
@@ -231,7 +267,7 @@ const swapTokensOneInch = async (req,res)=>{
     else{
         res.status('401').send({
             error: "unauthorized"
-        });
+        })
     }
 }
-export {swapForTokens,getSwapTokensList,swapTokensSell,swapTokensOneInch}
+export {swapForTokens,getSwapTokensList,getSwapTokensListSolana,swapTokensSell,swapTokensOneInch}

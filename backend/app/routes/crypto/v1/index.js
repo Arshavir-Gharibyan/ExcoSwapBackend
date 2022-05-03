@@ -22,6 +22,7 @@ import swapTokensList from "./wallet/swapTokensList";
 import importWallet from "./wallet/importWallet";
 import sellToken from "./wallet/sellToken";
 import OneInchswap from "./wallet/OneInchswap";
+import swapTokensListSolana from "./wallet/swapTokensListSolana";
 
 const cryptoV1Route = Router();
 
@@ -554,6 +555,21 @@ cryptoV1Route.use('/FANTOMBalance', getFantomBalance)
  *
  */
 cryptoV1Route.use('/swapTokensList', swapTokensList)
+/**
+ * @swagger
+ * /crypto/v1/swapTokensListSolana:
+ *   get:
+ *     summary: Get all available tokens for swap in Solana
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Success
+ *       401:
+ *         description: Access token is missing or invalid
+ *
+ */
+cryptoV1Route.use('/swapTokensListSolana', swapTokensListSolana)
 /**
  * @swagger
  * /crypto/v1/possibleSwap:

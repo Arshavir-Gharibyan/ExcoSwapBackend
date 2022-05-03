@@ -6,6 +6,16 @@ import {
 } from "../../../services/tatumService";
 import {findWalletByType} from "../../../services/walletService";
 import {addressTokenBalanceSOLANA, getAddressBalance, getBalanceFromHolding} from "../../../services/quicknodeService";
+// import {
+//     getAddressTransferEvents,
+//     getListAddresses,
+//     getTokenBalanceFromAddress, getTokenInfoFromAddress
+// } from "../../../services/solanascanService";
+import {
+    getListContractAddresses,
+    getTokenBalanceFromContractAddress,
+    getTokenInfoFromContractAddress
+} from "../../../services/etherscanService";
 const generateSOLANAWallet  =  async (req, res, all=false) =>{
     if (req.headers && req.headers.authorization) {
         const user = await getUserByJwt(req);
@@ -58,7 +68,7 @@ const importSOLANAWallet  =  async (seedPharse) =>{
                 "type":"SOLANA",
                 'priv_key':priv_key
             }
-        });
+        })
     }
 }
 const getSolanaBalance = async (req,res,all=false)=>{
@@ -68,6 +78,13 @@ const getSolanaBalance = async (req,res,all=false)=>{
             const walletSolana = await findWalletByType(user.id, 'SOLANA');
             const tokenHolding = await addressTokenBalanceSOLANA(walletSolana[0].address);
             const addressBalance = await getAddressBalance(walletSolana[0].address,'sol')
+
+            // const tokenTransferEvents = await getAddressTransferEvents(walletSolana[0].address)
+            // console.log(tokenTransferEvents,5555)
+            // const addresses = await getListContractAddresses(tokenTransferEvents.data)
+            // const balance = await getTokenBalanceFromAddress(addresses,walletSolana[0].address)
+            // const tokenInfo = await getTokenInfoFromAddress(balance)
+
             if(tokenHolding){
                 if (all){
                     return({
