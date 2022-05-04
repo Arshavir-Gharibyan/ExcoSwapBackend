@@ -23,6 +23,8 @@ import importWallet from "./wallet/importWallet";
 import sellToken from "./wallet/sellToken";
 import OneInchswap from "./wallet/OneInchswap";
 import swapTokensListSolana from "./wallet/swapTokensListSolana";
+import solanaTokenMetaByAddress from "./wallet/solanaTokenMetaByAddress";
+import jupiterSwap from "./wallet/jupiterSwap";
 
 const cryptoV1Route = Router();
 
@@ -570,6 +572,27 @@ cryptoV1Route.use('/swapTokensList', swapTokensList)
  *
  */
 cryptoV1Route.use('/swapTokensListSolana', swapTokensListSolana)
+
+/**
+ * @swagger
+ * /crypto/v1/solanaTokenMetaByAddress/{address}:
+ *   get:
+ *     summary: Get token meta by address in Solana
+ *     parameters:
+ *         - name: address
+ *           in: path
+ *           description: token address
+ *           required: true
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Success
+ *       401:
+ *         description: Access token is missing or invalid
+ *
+ */
+cryptoV1Route.use('/solanaTokenMetaByAddress', solanaTokenMetaByAddress)
 /**
  * @swagger
  * /crypto/v1/possibleSwap:
@@ -689,7 +712,7 @@ cryptoV1Route.use('/possibleSwap', swapToken)
  * @swagger
  * /crypto/v1/swap:
  *   post:
- *     summary: swap
+ *     summary: swap OneInch
  *     requestBody:
  *       required: true
  *       content:
@@ -743,4 +766,62 @@ cryptoV1Route.use('/possibleSwap', swapToken)
  *
  */
 cryptoV1Route.use('/swap', OneInchswap)
+/**
+ * @swagger
+ * /crypto/v1/swapSolana:
+ *   post:
+ *     summary: swap Solana
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               walletAddress:
+ *                 type: string
+ *                 description: The walletAddress.
+ *                 example: 0x
+ *               walletType:
+ *                 type: string
+ *                 description: The walletType.
+ *                 example: ETH
+ *               sellTokenSymbol:
+ *                 type: string
+ *                 description: The sellTokenSymbol.
+ *                 example: ETH
+ *               sellTokenAddress:
+ *                 type: string
+ *                 description: The sellTokenAddress.
+ *                 example: string
+ *               sellTokenDecimals:
+ *                 type: string
+ *                 description: The sellTokenDecimals.
+ *                 example: 18
+ *               buyTokenSymbol:
+ *                 type: string
+ *                 description: The buyTokenSymbol.
+ *                 example: DAI
+ *               buyTokenAddress:
+ *                 type: string
+ *                 description: The buyTokenAddress.
+ *                 example: string
+ *               buyTokenDecimals:
+ *                 type: string
+ *                 description: The buyTokenDecimals.
+ *                 example: 18
+ *               sellAmount:
+ *                 type: integer
+ *                 description: The amount.
+ *                 example: 0.1
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Success
+ *       401:
+ *         description: Access token is missing or invalid
+ *
+ */
+cryptoV1Route.use('/swapSolana', jupiterSwap)
 export default cryptoV1Route;

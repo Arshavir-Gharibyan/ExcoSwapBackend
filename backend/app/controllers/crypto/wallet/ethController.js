@@ -12,6 +12,7 @@ import {
     getListContractAddresses,
     getTokenBalanceFromContractAddress, getTokenInfoFromContractAddress
 } from "../../../services/etherscanService";
+import {getTokensBalanceMoralis} from "../../../services/moralisApiService";
 const generateETHWallet  =  async (req, res, all=false) =>{
     if (req.headers && req.headers.authorization) {
         const user = await getUserByJwt(req);
@@ -82,19 +83,20 @@ const getEthBalance =  async (req, res, all=false) =>{
         const user = await getUserByJwt(req);
         if(user){
             const walletEth = await findWalletByType(user.id, 'ETH');
-            const tokenTransferEvents = await getAddressTransferEvents(walletEth[0].address)
-            const contractAddresses = await getListContractAddresses(tokenTransferEvents.data)
-            const balance = await getTokenBalanceFromContractAddress(contractAddresses,walletEth[0].address)
-            const tokenInfo = await getTokenInfoFromContractAddress(balance)
+            // const tokenTransferEvents = await getAddressTransferEvents(walletEth[0].address)
+            // const contractAddresses = await getListContractAddresses(tokenTransferEvents.data)
+            // const balance = await getTokenBalanceFromContractAddress(contractAddresses,walletEth[0].address)
+            // const tokenInfo = await getTokenInfoFromContractAddress(balance)
+            const balance = await  getTokensBalanceMoralis('eth', walletEth[0].address)
             const addressBalance = await getAddressBalance(walletEth[0].address,'ethereum')
-            if(tokenInfo && Object.keys(tokenInfo).length){
+            if(balance && Object.keys(balance).length){
                 if(all){
                     return({
                         'ethBalance':
                             {
                                 'address':walletEth[0].address,
                                 'addressBalance':addressBalance.data.balance,
-                                'result':tokenInfo
+                                'result':balance
                             }
                     })
                 }
@@ -103,7 +105,7 @@ const getEthBalance =  async (req, res, all=false) =>{
                         {
                             'address':walletEth[0].address,
                             'addressBalance':addressBalance.data.balance,
-                            'result':tokenInfo
+                            'result':balance
                         }
                 })
             }else{

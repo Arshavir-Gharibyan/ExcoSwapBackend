@@ -1,16 +1,21 @@
 import { Connection, Keypair, Transaction } from '@solana/web3.js'
 import fetch from 'cross-fetch'
-//import { Wallet } from '@project-serum/anchor'
+import { Wallet } from '@project-serum/anchor'
 import bs58 from 'bs58'
-import { TokenListProvider} from '@solana/spl-token-registry';
-import {Wallet} from "ethers";
 
 class Jupiter {
     constructor () {
         this.baseUrl = 'https://quote-api.jup.ag/v1'
     }
 
-
+    async setUpConnection(rpc){
+       const connection  = new Connection(rpc)
+        return connection
+    }
+    async setUpWallet(priv){
+            const wallet = new Wallet(Keypair.fromSecretKey(new Uint8Array(new Buffer.from(priv,'base64'))))
+        return wallet
+    }
     async getQuote(config) { //5. Get the routes for a swap
         const { fromTokenAddress, toTokenAddress, amount } = config
 

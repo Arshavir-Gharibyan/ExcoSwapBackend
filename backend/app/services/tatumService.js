@@ -5,6 +5,7 @@ import Hdkey from "ethereumjs-wallet/dist.browser/hdkey";
 import * as EthUtil from "ethereumjs-util";
 import * as bip39 from "bip39";
 import * as ed25519 from "ed25519-hd-key";
+import bs58 from "bs58";
 
 const solanaWeb3 = require('@solana/web3.js');
 
@@ -289,6 +290,7 @@ const getWalletPrivKey = async (seedPharse, type) => {
             break;
     }
 }
+
 export {
     getWalletXpubBTC,
     getWalletPrivKey,

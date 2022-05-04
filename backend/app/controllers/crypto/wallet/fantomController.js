@@ -1,12 +1,19 @@
 import {getUserByJwt} from "../../../services/userService";
-import {getWalletAddressFantom, getWalletAddressSOLANA, getWalletPrivKey} from "../../../services/tatumService";
+import {
+    getAddressBalance,
+    getWalletAddressFantom,
+    getWalletAddressSOLANA,
+    getWalletPrivKey
+} from "../../../services/tatumService";
 import {findWalletByType} from "../../../services/walletService";
 import {
     getAddressTransferEvents,
     getTokenBalanceFromContractAddress,
-    getTokenInfoFromContractAddress
+    getTokenInfoFromContractAddress,
+    getListContractAddresses, getFTMBalance
 } from "../../../services/ftmscanService";
-import {getListContractAddresses} from "../../../services/etherscanService";
+import {getAddressBalanceMoralis, getTokensBalanceMoralis} from "../../../services/moralisApiService";
+//import {getListContractAddresses} from "../../../services/etherscanService";
 
 const generateFANTOMWallet  =  async (req, res,  all=false) =>{
     if (req.headers && req.headers.authorization) {
@@ -47,7 +54,7 @@ const generateFANTOMWallet  =  async (req, res,  all=false) =>{
         }
         res.status('401').send({
             error: "unauthorized"
-        }) ;
+        })
     }
 }
 const importFANTOMWallet  =  async (seedPharse) =>{
@@ -68,17 +75,22 @@ const getFANTOMBalance =  async (req, res, all=false) =>{
         const user = await getUserByJwt(req);
         if(user){
             const walletFantom = await findWalletByType(user.id, 'FANTOM');
-            const tokenTransferEvents = await getAddressTransferEvents(walletFantom[0].address)
-            const contractAddresses = await getListContractAddresses(tokenTransferEvents.data)
-            const balance = await getTokenBalanceFromContractAddress(contractAddresses,walletFantom[0].address)
-            const tokenInfo = await getTokenInfoFromContractAddress(balance)
-            if(tokenInfo && Object.keys(tokenInfo).length){
+            // const tokenTransferEvents = await getAddressTransferEvents(walletFantom[0].address)
+            //
+            // const contractAddresses = await getListContractAddresses(tokenTransferEvents.data)
+            // const balance = await getTokenBalanceFromContractAddress(contractAddresses,walletFantom[0].address)
+            // // console.log(balance,'balance')
+            // const tokenInfo = await getTokenInfoFromContractAddress(balance)
+            const balance = await  getTokensBalanceMoralis('fantom', walletFantom[0].address)
+            const addressBalance = await getFTMBalance(walletFantom[0].address)
+            if(balance && Object.keys(balance).length){
                 if(all){
                     return({
                         'fantomBalance':
                             {
                                 'address':walletFantom[0].address,
-                                'result':tokenInfo
+                                'addressBalance':addressBalance,
+                                'result':balance
                             }
                     })
                 }
@@ -86,23 +98,26 @@ const getFANTOMBalance =  async (req, res, all=false) =>{
                     'fantomBalance':
                         {
                             'address':walletFantom[0].address,
-                            'result':tokenInfo
+                            'addressBalance':addressBalance,
+                            'result':balance
                         }
                 })
             }else{
                 if(all){
                     return({
-                        'ethBalance':
+                        'fantomBalance':
                             {
                                 'address':walletFantom[0].address,
+                                'addressBalance':addressBalance,
                                 'result':'No token found'
                             }
                     })
                 }
                 res.status('200').send({
-                    'ethBalance':
+                    'fantomBalance':
                         {
                             'address':walletFantom[0].address,
+                            'addressBalance':addressBalance,
                             'result':'No token found'
                         }
                 })

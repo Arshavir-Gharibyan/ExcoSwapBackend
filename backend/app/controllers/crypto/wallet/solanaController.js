@@ -16,6 +16,7 @@ import {
     getTokenBalanceFromContractAddress,
     getTokenInfoFromContractAddress
 } from "../../../services/etherscanService";
+import {getSolanaTokensBalanceMoralis, getTokensBalanceMoralis} from "../../../services/moralisApiService";
 const generateSOLANAWallet  =  async (req, res, all=false) =>{
     if (req.headers && req.headers.authorization) {
         const user = await getUserByJwt(req);

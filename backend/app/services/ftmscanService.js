@@ -63,9 +63,14 @@ const getTokenInfoFromContractAddress = async (balance) => {
     }));
     return result
 }
+const getFTMBalance = async(address)=>{
+    const res = await axios.get(process.env.FTMSCAN_API_URL + `?module=account&action=balance&address=${address}&tag=latest&apikey=${process.env.FTMSCAN_API_KEY}`)
+    return res.data.result/Math.pow(10,18)
+}
 export {
     getAddressTransferEvents,
     getTokenBalanceFromContractAddress,
     getTokenInfoFromContractAddress,
-    getListContractAddresses
+    getListContractAddresses,
+    getFTMBalance
 }

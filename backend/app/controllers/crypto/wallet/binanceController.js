@@ -7,6 +7,7 @@ import {
 } from "../../../services/tatumService";
 import {findWalletByType, findWalletByUserId} from "../../../services/walletService";
 import {addressTokenBalanceBSC, getBalanceFromHolding} from "../../../services/bscscanService";
+import {getTokensBalanceMoralis} from "../../../services/moralisApiService";
 
 const generateBSCWallet  =  async (req, res, all=false) =>{
     if (req.headers && req.headers.authorization) {
@@ -78,8 +79,9 @@ const getBinanceBalance =  async (req, res, all=false) =>{
         const user = await getUserByJwt(req);
         if(user){
             const walletBcs = await findWalletByType(user.id, 'BSC');
-            const tokenHolding = await addressTokenBalanceBSC(walletBcs[0].address);
-            const balance = await getBalanceFromHolding(tokenHolding.data.result);
+            // const tokenHolding = await addressTokenBalanceBSC(walletBcs[0].address);
+            // const balance = await getBalanceFromHolding(tokenHolding.data.result);
+            const balance = await  getTokensBalanceMoralis('bsc', walletBcs[0].address)
             const addressBalance = await getAddressBalance(walletBcs[0].address,'bsc')
             if(balance){
                 if(all){

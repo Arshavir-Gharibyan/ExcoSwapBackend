@@ -6,6 +6,7 @@ import {
     getUSDRate,
     imageExists
 } from "../../../services/swapService";
+import axios from "axios";
 const fetch = require('isomorphic-fetch')
 const {  BigNumber, Wallet } = require('ethers')
 const providers = require('ethers').providers;
@@ -16,7 +17,7 @@ const rpcUrls = {
     ETH: 'https://mainnet.infura.io/v3/c18b3b234e6d44509b167035389b0cd1',
     BSC: 'https://bsc-dataseed.binance.org/',
     MATIC: 'https://autumn-snowy-glade.matic.quiknode.pro/89a10094f36dc6b2e98c78f377939f947c870d5f/',
-    //, SOlANA: 'https://rough-silent-shape.solana-mainnet.quiknode.pro/43c04ea46b6f7b073cf53f35aff8c3b6a413820b/'
+    // SOLANA: 'https://rough-silent-shape.solana-mainnet.quiknode.pro/43c04ea46b6f7b073cf53f35aff8c3b6a413820b/'
     SOLANA: 'https://ssc-dao.genesysgo.net'
 
 }
@@ -24,7 +25,7 @@ const rpcUrls = {
 const slugToChainId = {
     ETH: 1,
     BSC: 56,
-    MATIC: 137
+    MATIC: 137,
 }
 const abi = require('erc-20-abi')
 const qs = require('qs');
@@ -39,26 +40,37 @@ const swapForTokens = async (req,res)=>{
             const fromTokenAddress = req.fields.sellTokenAddress;
             const toTokenAddress = req.fields.buyTokenAddress;
             const formattedAmount = req.fields.sellAmount.toString()
-            const chain = req.fields.walletType
-            const chainId = slugToChainId[chain]
             const amount = parseUnits(formattedAmount, req.fields.sellTokenDecimals).toString()
-            const oneInch = new OneInch()
-            const result =  await oneInch.getQuote({ chainId, fromTokenAddress, toTokenAddress, amount })
-            const resultUSDSellToken = await getUSDRate(req.fields.sellTokenSymbol);
-            const resultUSD = await getUSDRate('ETH');
-            const fee = (result.estimatedGas)*Math.pow(10,-9)
-            const toTokenAmountFormatted = formatUnits(result.toTokenAmount, req.fields.buyTokenDecimals)
-            if (result){
+            const chain = req.fields.walletType
+            if (chain === 'SOLANA'){
+                const inputMint = toTokenAddress
+                const outputMint = fromTokenAddress
+                const mintAmount = req.fields.sellAmount
+                const price = await axios.get(`https://quote-api.jup.ag/v1/price?inputMint=${inputMint}&outputMint=${outputMint}&amount=${mintAmount}`)
                 res.status('200').send({
-                    buyAmount:toTokenAmountFormatted,
-                    sellAmountInUsd:(resultUSDSellToken.USD*req.fields.sellAmount).toFixed(2),
-                    feeInSellAmountUsd:fee*resultUSD.USD,
-                    feeInSellAmountETH:fee
-                })
+                   buyAmount:price.data.data.price*mintAmount
+               })
             }else{
-                res.status('404').send({
-                    result:result.validationErrors
-                })
+                const chainId = slugToChainId[chain]
+                const oneInch = new OneInch()
+                const result =  await oneInch.getQuote({ chainId, fromTokenAddress, toTokenAddress, amount })
+                const resultUSDSellToken = await getUSDRate(req.fields.sellTokenSymbol);
+                const resultUSD = await getUSDRate('ETH');
+                const fee = (result.estimatedGas)*Math.pow(10,-9)
+                const toTokenAmountFormatted = formatUnits(result.toTokenAmount, req.fields.buyTokenDecimals)
+                if (result){
+                    res.status('200').send({
+                        buyAmount:toTokenAmountFormatted,
+                        sellAmountInUsd:(resultUSDSellToken.USD*req.fields.sellAmount).toFixed(2),
+                        feeInSellAmountUsd:fee*resultUSD.USD,
+                        feeInSellAmountETH:fee
+                    })
+                }else{
+                    res.status('404').send({
+                        result:result.validationErrors
+                    })
+                }
+
             }
 
         }
@@ -185,12 +197,6 @@ const swapTokensOneInch = async (req,res)=>{
         const walletType = req.fields.walletType
 
         if(user){
-            if (walletType === "SOLANA"){
-                const jupiter = new Jupiter()
-                console.log(jupiter,98999)
-
-
-            }
 
             let errors = []
             const chain = walletType
@@ -270,4 +276,59 @@ const swapTokensOneInch = async (req,res)=>{
         })
     }
 }
-export {swapForTokens,getSwapTokensList,getSwapTokensListSolana,swapTokensSell,swapTokensOneInch}
+const swapTokensJupiter = async (req,res)=>{
+    if (req.headers && req.headers.authorization) {
+        const user = await getUserByJwt(req);
+        const inputMint = req.fields.buyTokenAddress
+        const outputMint = req.fields.sellTokenAddress
+        const amount = req.fields.sellAmount
+        const walletType = req.fields.walletType
+        const rpcUrl = rpcUrls[walletType]
+        const priv = await getUserWalletPrivKey(user.id,walletType)
+        if(user){
+            const jupiter = new Jupiter()
+            const connectionSolana = await jupiter.setUpConnection(rpcUrl)
+            const walletSolana = await jupiter.setUpWallet(priv.dataValues.private_key)
+        }
+        else{
+            res.status('401').send({
+                error: "unauthorized"
+            }) ;
+        }
+    }
+    else{
+        res.status('401').send({
+            error: "unauthorized"
+        })
+    }
+}
+const getTokensMetaSolana = async(req,res)=>{
+    if (req.headers && req.headers.authorization) {
+        const user = await getUserByJwt(req);
+        const tokenAddress = req.params.address
+        if(user){
+            try {
+               const meta = await axios.get(`https://public-api.solscan.io/token/meta?tokenAddress=${tokenAddress}`)
+                console.log(meta.data)
+                res.status('200').send({
+                    result:meta.data
+                })
+            }catch(e){
+                res.status('404').send({
+                    error: e.response
+                }) ;
+            }
+        }
+        else{
+            res.status('401').send({
+                error: "unauthorized"
+            }) ;
+        }
+    }
+    else{
+        res.status('401').send({
+            error: "unauthorized"
+        })
+    }
+}
+export {swapForTokens,getSwapTokensList,getSwapTokensListSolana,swapTokensSell,swapTokensOneInch, getTokensMetaSolana,swapTokensJupiter}
