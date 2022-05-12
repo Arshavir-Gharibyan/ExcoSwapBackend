@@ -6,11 +6,6 @@ import {
 } from "../../../services/tatumService";
 import {findWalletByType} from "../../../services/walletService";
 import {addressTokenBalanceSOLANA, getAddressBalance, getBalanceFromHolding} from "../../../services/quicknodeService";
-// import {
-//     getAddressTransferEvents,
-//     getListAddresses,
-//     getTokenBalanceFromAddress, getTokenInfoFromAddress
-// } from "../../../services/solanascanService";
 import {
     getListContractAddresses,
     getTokenBalanceFromContractAddress,

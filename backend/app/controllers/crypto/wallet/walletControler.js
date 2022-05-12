@@ -6,6 +6,7 @@ import {generateMATICWallet, getMaticBalance, importMATICWallet} from "./maticCo
 import {generateSOLANAWallet, getSolanaBalance, importSOLANAWallet} from "./solanaController";
 import {generateCELOWallet, importCELOWallet} from "./celoController";
 import {generateFANTOMWallet, getFANTOMBalance, importFANTOMWallet} from "./fantomController";
+import {generateAVAXWallet, getAVAXBalance, importAVAXWallet} from "./avaxController";
 import {createWallet, findWallet, findWalletByUserId} from "../../../services/walletService";
 import Hdkey from "ethereumjs-wallet/dist.browser/hdkey";
 import * as Bip39 from "bip39";
@@ -100,7 +101,9 @@ const wallet =  async (seedPhrase, user)=>{
     const solana = await importSOLANAWallet(seedPhrase);
     const celo = await importCELOWallet(seedPhrase);
     const fantom = await importFANTOMWallet(seedPhrase);
-    const wallet = {...bsc,...btc,...eth,...matic,...solana,...celo,...fantom};
+    const avax = await importAVAXWallet(seedPhrase)
+    console.log(avax)
+    const wallet = {...bsc,...btc,...eth,...matic,...solana,...celo,...fantom,...avax};
     Object.keys(wallet).map(async (curr) => {
         const isExist = await findWallet(user.id,wallet[curr].address,wallet[curr].type)
         if (!isExist) {

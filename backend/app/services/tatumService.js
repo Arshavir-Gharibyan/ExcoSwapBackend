@@ -1,14 +1,18 @@
 import * as Bip39 from "bip39";
-
+const hex = require('string-hex')
 const BIP84 = require('bip84')
 import Hdkey from "ethereumjs-wallet/dist.browser/hdkey";
 import * as EthUtil from "ethereumjs-util";
 import * as bip39 from "bip39";
 import * as ed25519 from "ed25519-hd-key";
 import bs58 from "bs58";
-
+import {Buffer} from 'buffer'
+import {MnemonicWallet} from '@avalabs/avalanche-wallet-sdk'
+import HDKey from "ethereumjs-wallet/dist/hdkey";
 const solanaWeb3 = require('@solana/web3.js');
-
+import Avalanche, { BinTools, BN} from "avalanche"
+import {privateToAddress} from "ethereumjs-util";
+import * as ethUtil from "ethereumjs-util";
 const axios = require("axios");
 const getWalletXpubBTC = async (seedPhrase) => {
     try {
@@ -146,6 +150,23 @@ const mnemonicToKeys = async (mnemonic) => {
     const publicAddress = EthUtil.toChecksumAddress(addr);
     return {publicAddress};
 
+}
+export const getWalletAddressAvax = async (seedPhrase) => {
+    const mnemonic = seedPhrase
+    const accountAddress = await mnemonicToKeysAvax(mnemonic)
+    console.log(accountAddress)
+    return accountAddress.publicAddress;
+}
+const mnemonicToKeysAvax = async(mnemonic) => {
+    const seed = bip39.mnemonicToSeedSync(mnemonic)
+    const AVAX_ACCOUNT_PATH = `m/44'/9000'/0'`
+    const masterHdKey = HDKey.fromMasterSeed(seed)
+    const accountHdKey = masterHdKey.derivePath(AVAX_ACCOUNT_PATH)
+    const privateKey = accountHdKey.privateExtendedKey()
+    const publicKey = EthUtil.privateToPublic(accountHdKey._hdkey._privateKey);
+    const address = EthUtil.publicToAddress(publicKey).toString('hex');
+    const publicAddress = EthUtil.toChecksumAddress(address);
+    return {publicAddress};
 }
 const getWalletAddressBTC = async (seedPhrase) => {
     const mnemonic = seedPhrase;
@@ -285,9 +306,18 @@ const getWalletPrivKey = async (seedPharse, type) => {
             const roots = Hdkey.fromMasterSeed(seed);
             const addrNode = roots.derivePath("m'/44'/0'/0'");
             const privKey = addrNode._hdkey._privateKey;
-            const base64Stringf = btoa(String.fromCharCode.apply(null, new Uint8Array(privKey)));
+            const base64Stringf = btoa(String.fromCharCode.apply(null, new Uint8Array(privKey)))
             return base64Stringf
             break;
+        case 'avax':
+            const seedA = bip39.mnemonicToSeedSync(seedPharse)
+            const AVAX_ACCOUNT_PATH = `m/44'/9000'/0'`
+            const masterHdKey = HDKey.fromMasterSeed(seedA)
+            const accountHdKey = masterHdKey.derivePath(AVAX_ACCOUNT_PATH)
+            const privateKey = accountHdKey.privateExtendedKey()
+            const base64StringA = btoa(String.fromCharCode.apply(null, new Uint8Array(privateKey)));
+            console.log(privateKey,55)
+            return base64StringA
     }
 }
 

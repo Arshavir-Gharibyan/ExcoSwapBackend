@@ -7,7 +7,8 @@ const getTokensBalanceMoralis = async (chainType,address)=>{
         bsc: 'https://bscscan.com/images/main/empty-token.png',
         polygon: 'https://polygonscan.com/images/main/empty-token.png',
         fantom: 'https://ftmscan.com/images/main/empty-token.png',
-        solana:'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'
+        solana:'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+        avalanche: ' https://speedy-nodes-nyc.moralis.io/d8beedf0ecaca33543ac1e7e/avalanche/mainnet'
     }
     try {
         const balance = await axios.get(process.env.MORALIS_API_URL +`/${address}/erc20?chain=${chainType}`,{

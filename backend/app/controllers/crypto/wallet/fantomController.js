@@ -2,7 +2,6 @@ import {getUserByJwt} from "../../../services/userService";
 import {
     getAddressBalance,
     getWalletAddressFantom,
-    getWalletAddressSOLANA,
     getWalletPrivKey
 } from "../../../services/tatumService";
 import {findWalletByType} from "../../../services/walletService";
@@ -75,12 +74,6 @@ const getFANTOMBalance =  async (req, res, all=false) =>{
         const user = await getUserByJwt(req);
         if(user){
             const walletFantom = await findWalletByType(user.id, 'FANTOM');
-            // const tokenTransferEvents = await getAddressTransferEvents(walletFantom[0].address)
-            //
-            // const contractAddresses = await getListContractAddresses(tokenTransferEvents.data)
-            // const balance = await getTokenBalanceFromContractAddress(contractAddresses,walletFantom[0].address)
-            // // console.log(balance,'balance')
-            // const tokenInfo = await getTokenInfoFromContractAddress(balance)
             const balance = await  getTokensBalanceMoralis('fantom', walletFantom[0].address)
             const addressBalance = await getFTMBalance(walletFantom[0].address)
             if(balance && Object.keys(balance).length){

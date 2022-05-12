@@ -7,6 +7,7 @@ import {
     imageExists
 } from "../../../services/swapService";
 import axios from "axios";
+import {Connection} from "@solana/web3.js";
 const fetch = require('isomorphic-fetch')
 const {  BigNumber, Wallet } = require('ethers')
 const providers = require('ethers').providers;
@@ -17,6 +18,7 @@ const rpcUrls = {
     ETH: 'https://mainnet.infura.io/v3/c18b3b234e6d44509b167035389b0cd1',
     BSC: 'https://bsc-dataseed.binance.org/',
     MATIC: 'https://autumn-snowy-glade.matic.quiknode.pro/89a10094f36dc6b2e98c78f377939f947c870d5f/',
+    FANTOM: 'https://rpc.ftm.tools/',
     // SOLANA: 'https://rough-silent-shape.solana-mainnet.quiknode.pro/43c04ea46b6f7b073cf53f35aff8c3b6a413820b/'
     SOLANA: 'https://ssc-dao.genesysgo.net'
 
@@ -26,6 +28,7 @@ const slugToChainId = {
     ETH: 1,
     BSC: 56,
     MATIC: 137,
+    FANTOM: 250
 }
 const abi = require('erc-20-abi')
 const qs = require('qs');
@@ -279,21 +282,36 @@ const swapTokensOneInch = async (req,res)=>{
 const swapTokensJupiter = async (req,res)=>{
     if (req.headers && req.headers.authorization) {
         const user = await getUserByJwt(req);
-        const inputMint = req.fields.buyTokenAddress
-        const outputMint = req.fields.sellTokenAddress
-        const amount = req.fields.sellAmount
+        const amount = req.fields.sellAmount*Math.pow(10, req.fields.sellTokenDecimals)
         const walletType = req.fields.walletType
-        const rpcUrl = rpcUrls[walletType]
         const priv = await getUserWalletPrivKey(user.id,walletType)
+        const confirm = {commitment: 'confirmed', confirmTransactionInitialTimeout: 120000}
+        const connection = new Connection("https://ssc-dao.genesysgo.net", confirm)
         if(user){
+            const inputMint = req.fields.sellTokenAddress
+            const outputMint = req.fields.buyTokenAddress
             const jupiter = new Jupiter()
-            const connectionSolana = await jupiter.setUpConnection(rpcUrl)
             const walletSolana = await jupiter.setUpWallet(priv.dataValues.private_key)
+            const routes = await jupiter.getQuote({ inputMint, outputMint, amount })
+            const txid = await jupiter.getSwap({ inputMint, outputMint, amount }, routes, walletSolana)
+           try {
+               await connection.confirmTransaction(txid)
+               console.log(`https://solscan.io/tx/${txid}`)
+               res.status('200').send({
+                   success: true,
+                   error: ''
+               })
+           }
+           catch (e){
+               res.status('400').send({
+                   error: e.message
+               })
+           }
         }
         else{
             res.status('401').send({
                 error: "unauthorized"
-            }) ;
+            })
         }
     }
     else{
@@ -309,14 +327,13 @@ const getTokensMetaSolana = async(req,res)=>{
         if(user){
             try {
                const meta = await axios.get(`https://public-api.solscan.io/token/meta?tokenAddress=${tokenAddress}`)
-                console.log(meta.data)
                 res.status('200').send({
                     result:meta.data
                 })
             }catch(e){
                 res.status('404').send({
                     error: e.response
-                }) ;
+                })
             }
         }
         else{
