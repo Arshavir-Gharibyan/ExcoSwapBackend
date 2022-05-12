@@ -281,7 +281,7 @@ const swapTokensOneInch = async (req,res)=>{
 }
 const swapTokensJupiter = async (req,res)=>{
     if (req.headers && req.headers.authorization) {
-        const user = await getUserByJwt(req);
+        const user = await getUserByJwt(req)
         const amount = req.fields.sellAmount*Math.pow(10, req.fields.sellTokenDecimals)
         const walletType = req.fields.walletType
         const priv = await getUserWalletPrivKey(user.id,walletType)
