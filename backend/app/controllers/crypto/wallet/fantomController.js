@@ -1,18 +1,11 @@
 import {getUserByJwt} from "../../../services/userService";
 import {
-    getAddressBalance,
     getWalletAddressFantom,
     getWalletPrivKey
 } from "../../../services/tatumService";
 import {findWalletByType} from "../../../services/walletService";
-import {
-    getAddressTransferEvents,
-    getTokenBalanceFromContractAddress,
-    getTokenInfoFromContractAddress,
-    getListContractAddresses, getFTMBalance
-} from "../../../services/ftmscanService";
+import {getFTMBalance} from "../../../services/ftmscanService";
 import {getAddressBalanceMoralis, getTokensBalanceMoralis} from "../../../services/moralisApiService";
-//import {getListContractAddresses} from "../../../services/etherscanService";
 
 const generateFANTOMWallet  =  async (req, res,  all=false) =>{
     if (req.headers && req.headers.authorization) {

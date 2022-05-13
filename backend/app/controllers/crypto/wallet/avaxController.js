@@ -4,7 +4,7 @@ import {
     getWalletAddressAvax,
     getWalletPrivKey
 } from "../../../services/tatumService";
-//import {getAVXBalance} from "../../../services/avaxscanService"
+import {getAVXBalance} from "../../../services/avaxscanService"
 import {findWalletByType} from "../../../services/walletService";
 import {getAddressBalanceMoralis, getTokensBalanceMoralis} from "../../../services/moralisApiService";
 
