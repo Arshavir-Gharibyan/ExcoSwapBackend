@@ -42,7 +42,7 @@ const getSwapTokens = async()=>{
     //console.log(fantomResponse)
 
     const response = {...ethResponse,...bscResponse,...polygonResponse,...fantomResponse}
-    return fantomResponse;
+    return response;
 }
 const getSwapTokensSolana = async()=>{
 

@@ -4,6 +4,7 @@ import {
     getWalletAddressAvax,
     getWalletPrivKey
 } from "../../../services/tatumService";
+import {getAVXBalance} from "../../../services/avaxscanService"
 import {findWalletByType} from "../../../services/walletService";
 import {getAddressBalanceMoralis, getTokensBalanceMoralis} from "../../../services/moralisApiService";
 
@@ -67,7 +68,8 @@ const getAVAXBalance =  async (req, res, all=false) =>{
         const user = await getUserByJwt(req);
         if(user){
             const walletAvax = await findWalletByType(user.id, 'AVAX');
-            const balance = await  getTokensBalanceMoralis('avax', walletAvax[0].address)
+            const balance = await  getTokensBalanceMoralis('avalanche', walletAvax[0].address)
+            console.log(balance,55)
             const addressBalance = await getAVXBalance(walletAvax[0].address)
             if(balance && Object.keys(balance).length){
                 if(all){
