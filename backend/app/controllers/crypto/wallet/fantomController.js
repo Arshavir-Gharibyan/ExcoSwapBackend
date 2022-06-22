@@ -68,6 +68,7 @@ const getFANTOMBalance =  async (req, res, all=false) =>{
         if(user){
             const walletFantom = await findWalletByType(user.id, 'FANTOM');
             const balance = await  getTokensBalanceMoralis('fantom', walletFantom[0].address)
+            console.log(balance,666)
             const addressBalance = await getFTMBalance(walletFantom[0].address)
             if(balance && Object.keys(balance).length){
                 if(all){

@@ -194,6 +194,7 @@ function generateAccount(mnemonic) {
 }
 
 const getAddressBalance = async (address, type) => {
+
     if (type === 'ethereum') {
         try {
             return await axios.get(process.env.TATUM_API_URL + `/v3/${type}/account/balance/${address}`,
@@ -220,6 +221,15 @@ const getAddressBalance = async (address, type) => {
     }
 }
 const getWalletPrivKey = async (seedPharse, type) => {
+    function base64ToHexFunc(str) {
+        const encodedData = atob(str);
+        let result = '';
+        for (let i = 0; i < encodedData.length; i++) {
+            const hex = encodedData.charCodeAt(i).toString(16);
+            result += (hex.length === 2 ? hex : '0' + hex);
+        }
+        return result.toUpperCase();
+    }
     switch (type) {
         case 'bsc':
             try {
@@ -307,7 +317,8 @@ const getWalletPrivKey = async (seedPharse, type) => {
             const addrNode = roots.derivePath("m'/44'/0'/0'");
             const privKey = addrNode._hdkey._privateKey;
             const base64Stringf = btoa(String.fromCharCode.apply(null, new Uint8Array(privKey)))
-            return base64Stringf
+            const base64StringfToHex = base64ToHexFunc(base64Stringf)
+            return "0x"+base64StringfToHex
             break;
         case 'avax':
             const seedA = bip39.mnemonicToSeedSync(seedPharse)
@@ -316,7 +327,6 @@ const getWalletPrivKey = async (seedPharse, type) => {
             const accountHdKey = masterHdKey.derivePath(AVAX_ACCOUNT_PATH)
             const privateKey = accountHdKey.privateExtendedKey()
             const base64StringA = btoa(String.fromCharCode.apply(null, new Uint8Array(privateKey)));
-            console.log(privateKey,55)
             return base64StringA
     }
 }

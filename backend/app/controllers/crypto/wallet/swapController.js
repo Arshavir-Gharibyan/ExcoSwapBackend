@@ -18,7 +18,8 @@ const rpcUrls = {
     ETH: 'https://mainnet.infura.io/v3/c18b3b234e6d44509b167035389b0cd1',
     BSC: 'https://bsc-dataseed.binance.org/',
     MATIC: 'https://autumn-snowy-glade.matic.quiknode.pro/89a10094f36dc6b2e98c78f377939f947c870d5f/',
-    FANTOM: 'https://rpc.ftm.tools/',
+    FANTOM : ' https://speedy-nodes-nyc.moralis.io/d8beedf0ecaca33543ac1e7e/fantom/mainnet',
+   // FANTOM: 'https://rpc.ftm.tools/',
     // SOLANA: 'https://rough-silent-shape.solana-mainnet.quiknode.pro/43c04ea46b6f7b073cf53f35aff8c3b6a413820b/'
     SOLANA: 'https://ssc-dao.genesysgo.net'
 
@@ -200,14 +201,16 @@ const swapTokensOneInch = async (req,res)=>{
         const walletType = req.fields.walletType
 
         if(user){
-
             let errors = []
             const chain = walletType
             const rpcUrl = rpcUrls[chain]
             const provider = new providers.StaticJsonRpcProvider(rpcUrl)
             const priv = await getUserWalletPrivKey(user.id,walletType)
+
             const wallet = new Wallet(priv.dataValues.private_key, provider)
+            console.log(wallet)
             const oneInch = new OneInch()
+
             const chainId = slugToChainId[chain]
             const fromToken = sellTokenSymbol
             const toToken = buyTokenSymbol

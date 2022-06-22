@@ -74,7 +74,7 @@ class OneInch {
             console.log(result)
             throw new Error('expected tx data')
         }
-        if (chainId===137){
+        if (chainId === 250){
             const { data, to, value,gasPrice} = result
 
             return {
@@ -118,7 +118,7 @@ class OneInch {
         if (!result.tx) {
             throw new Error('expected tx data')
         }
-        if(chainId===137){
+        if(chainId === 250){
             const {data, to, value,gasPrice } = result.tx
 
             return {

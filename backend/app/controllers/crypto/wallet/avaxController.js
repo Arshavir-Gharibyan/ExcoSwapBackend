@@ -71,6 +71,7 @@ const getAVAXBalance =  async (req, res, all=false) =>{
             const balance = await  getTokensBalanceMoralis('avalanche', walletAvax[0].address)
             console.log(balance,55)
             const addressBalance = await getAVXBalance(walletAvax[0].address)
+            console.log(addressBalance)
             if(balance && Object.keys(balance).length){
                 if(all){
                     return({
